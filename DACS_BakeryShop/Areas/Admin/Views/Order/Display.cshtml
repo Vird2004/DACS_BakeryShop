@@ -1,0 +1,16 @@
+﻿@model DACS_BakeryShop.Models.Order
+
+<h2>Order Details</h2>
+<table class="table">
+    <tr>
+        <th>Order ID</th>
+        <td>@Model.Id</td>
+    </tr>
+    
+    <tr>
+        <th>Total Price</th>
+        <td>@Model.TotalPrice</td>
+    </tr>
+   
+</table>
+<a asp-area="Admin" asp-controller="Order" asp-action="Index" class="btn btn-secondary">Back to List</a>

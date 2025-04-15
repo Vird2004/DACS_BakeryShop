@@ -1,0 +1,41 @@
+﻿@model IEnumerable<DACS_BakeryShop.Models.Order>
+
+@{
+    ViewData["Title"] = "Order Management";
+}
+
+<h2>Order Management</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Total Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.UserId</td>  @* Hiển thị đúng tên khách hàng *@
+                    <td>@order.TotalPrice.ToString("N2") VND</td>
+                    
+                    <td>
+                        <a asp-area="Admin" asp-controller="Order" asp-action="Display" asp-route-id="@order.Id" class="btn btn-info">View</a>
+                        <button class="btn btn-danger" onclick="confirmDelete(@order.Id)">Delete</button>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function confirmDelete(orderId) {
+        if (confirm("Bạn có chắc muốn xóa đơn hàng này?")) {
+            window.location.href = "/Admin/Order/Delete/" + orderId;
+        }
+    }
+</script>

@@ -1,0 +1,102 @@
+﻿@model DACS_BakeryShop.Models.ShoppingCart 
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Giỏ hàng của bạn";
+    var user = await UserManager.GetUserAsync(User);
+    var isCustomer = user != null && await UserManager.IsInRoleAsync(user, "Customer");
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">🛒 Giỏ hàng của bạn</h2>
+
+    @if (Model.Items.Count == 0)
+    {
+                <div class="alert alert-warning text-center">
+                    <h4>Giỏ hàng trống</h4>
+                    <p>Hãy thêm sản phẩm vào giỏ hàng ngay nào!</p>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Mua sắm ngay</a>
+                </div>
+    }
+    else
+    {
+                <table class="table table-hover border rounded shadow">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Tổng</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                @foreach (var item in Model.Items)
+                {
+                                    <tr>
+                                        <td>
+                                            <img src="@item.ImageUrl" alt="@item.Name" width="70" class="rounded">
+                                        </td>
+                                        <td>@item.Name</td>
+                                        <td>@item.Price.ToString("N0") đ</td>
+                                        <td>
+                                            <input type="number" class="form-control text-center update-quantity" 
+                                                   data-id="@item.ProductId" value="@item.Quantity" min="1">
+                                        </td>
+                                        <td>@((item.Price * item.Quantity).ToString("N0")) đ</td>
+                                        <td>
+                                                    <a href="@Url.Action("RemoveFromCart", "ShoppingCart", new { productId = item.ProductId, returnUrl = Url.Action("Index", "ShoppingCart") })"
+                   class="btn btn-danger btn-sm">
+                    ❌ Xóa
+                </a>
+
+                                        </td>
+                                    </tr>
+                }
+                    </tbody>
+                </table>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <h4 class="text-primary">Tổng tiền: <span class="fw-bold text-danger">@Model.Items.Sum(i => i.Price * i.Quantity).ToString("N0") đ</span></h4>
+                    <div>
+                        <a href="@Url.Action("Index", "Product")" class="btn btn-outline-secondary">🔄 Tiếp tục mua sắm</a>
+                @if (isCustomer)
+                {
+                    <a href="@Url.Action("Checkout", "ShoppingCart")" class="btn btn-success">💳 Thanh toán</a>
+                }
+                else
+                {
+                    <div class="alert alert-danger mt-3">
+                        <strong>⚠ Chỉ khách hàng mới có thể đặt hàng!</strong>
+                    </div>
+                }
+
+                    </div>
+                </div>
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        $(".btn-remove-cart").click(function (e) {
+            e.preventDefault(); // Ngăn chặn load lại trang
+
+            var url = $(this).attr("href"); // Lấy đường dẫn từ nút xóa
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    if (response.success) {
+                        $("#cartItemCount").text(response.cartItemCount); // Cập nhật số lượng giỏ hàng
+                        location.reload(); // Reload giỏ hàng để cập nhật danh sách sản phẩm
+                    } else {
+                        alert("Lỗi khi xóa sản phẩm khỏi giỏ hàng.");
+                    }
+                }
+            });
+        });
+    });
+</script>

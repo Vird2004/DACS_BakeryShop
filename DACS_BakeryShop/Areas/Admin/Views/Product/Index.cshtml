@@ -1,0 +1,48 @@
+﻿<a href="@Url.Action("Add", "Product", new { area = "Admin" })" class="btn btn-primary">➕ Add Product</a>
+
+
+
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/stylesheet.css" asp-append-version="true">
+
+</head>
+<table class="table-custom">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Image</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Price.ToString("C")</td>
+                    <td>@product.Description</td>
+                    <td>
+                        <img src="@product.ImageUrl" alt="@product.Name" class="product-image" />
+                    </td>
+                    <td class="@(product.Category != null ? "category-available" : "category-missing")">
+                    @(product.Category?.Name ?? "No Category")
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Display", "Product", new { area = "Admin", id = product.Id })" class="custom-view-btn">View</a>
+                        <a href="@Url.Action("Update", "Product", new { area = "Admin", id = product.Id })" class="custom-edit-btn">Edit</a>
+                        <a href="@Url.Action("Delete", "Product", new { area = "Admin", id = product.Id })" class="custom-delete-btn">Delete</a>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
+
+                        
